@@ -2,18 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import {GlobalStyle, theme} from "./theme";
-import {ThemeProvider} from "styled-components";
+import {Providers} from "./Providers";
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
 );
+// TODO: strict mode render twice in dev mode
 root.render(
     <React.StrictMode>
-        <GlobalStyle/>
-        <ThemeProvider theme={theme}>
+        <Providers>
             <App/>
-        </ThemeProvider>
+        </Providers>
     </React.StrictMode>
 );
 
