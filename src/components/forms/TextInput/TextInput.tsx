@@ -1,7 +1,7 @@
-import {Field, useFormikContext} from 'formik'
-import React, {useRef} from 'react'
-import InputLabel from "../InputLabel/InputLabel";
+import React, {useRef} from 'react';
+import {Field, useFormikContext} from 'formik';
 import styled from "styled-components";
+import InputLabel from "../InputLabel/InputLabel";
 import {InputError} from "../InputError/InputError";
 
 type Props = {};
@@ -43,8 +43,6 @@ type TextInputProps = {
     label: string;
     type?: string;
     size?: string;
-    flexible?: boolean;
-    value?: string | undefined;
     onChange?: (value: string) => void;
 };
 

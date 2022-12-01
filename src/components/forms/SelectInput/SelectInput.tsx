@@ -39,19 +39,17 @@ const SelectContainer = styled.div`
 type SelectInputProps = {
     name: string;
     label: string;
-    value: string | undefined | number;
     children: ReactNode;
     onChange?: (value: string) => void;
 };
 const SelectInput = ({
                          name,
                          label,
-                         value,
                          children,
                          onChange = undefined
                      }: SelectInputProps) => {
 
-    const [selected, setSelected] = useState<string | number | undefined>(value)
+    const [selected, setSelected] = useState<string | number | undefined>()
 
     const {setFieldValue} = useFormikContext()
 

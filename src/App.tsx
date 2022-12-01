@@ -1,44 +1,65 @@
 import React, {useMemo, useState} from 'react';
 import styled from 'styled-components';
+import * as Yup from 'yup';
+import {ColumnsType} from 'rc-table/es/interface';
+import Table from 'rc-table';
+import {Form, Formik} from "formik";
 import {useExchange} from "./data/hooks/useExchange";
 import {LoadingContainer} from "./components/loading/LoadingContainer";
 import {Loading} from "./components/loading/Loading";
 import LoadingIcon from './assets/icons/loading.svg';
-import Table from 'rc-table'
-import {ColumnsType} from 'rc-table/es/interface'
 import {ExchangeRate} from "./data/api/api";
 import {theme} from "./theme";
 import Button from "./components/forms/Button/Button";
 import {TextInput} from "./components/forms/TextInput/TextInput";
-import {Formik} from "formik";
 import {SelectInput} from './components/forms/SelectInput/SelectInput';
 
-const Title = styled.h1`
-  font-size: 1.5em;
-  text-align: center;
-  color: palevioletred;
-`;
 
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: ${props => props.theme.size.spacing[5]};
-  margin-top: ${props => props.theme.size.spacing[5]};
-`
+const HeaderText = styled.h1`
+  color: ${props => props.theme.color.red};
+  text-align: center;
+`;
 
 const Img = styled.img`
   width: 10em;
 `;
 
+const TableWrapper = styled.div`
+  .rc-table-content {
+    height: 500px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+  }
+
+  flex-basis: 40%;
+  padding: 0 1rem;
+`;
+
+const FormWrapper = styled.div`
+  flex-basis: 20%;
+  padding: 1rem 1rem;
+`;
+
+const Flex = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+`;
+
+const Sum = styled.label`
+  font-size: 2rem;
+  color: ${props => props.theme.color.red};
+`;
+
 function App() {
+
     const {useExchangeRate} = useExchange();
 
     const {isLoading, isSuccess, data} = useExchangeRate();
 
-    const [value, setValue] = useState('0');
-    if (isSuccess) {
-        console.log('data', data);
-    }
+    const [sum, setSum] = useState('');
 
     const columns = useMemo<ColumnsType<ExchangeRate>>(
         () => [
@@ -84,11 +105,23 @@ function App() {
         [data]
     )
 
-    const handleSubmit = () => {
-        console.log('enter');
+    const handleSubmit = async (values: { country: string, amount: number }) => {
+        try {
+            if (data) {
+                const rate = data.rates.find(item => item.country === values?.country)?.rate || 0;
+                let result = (rate * values.amount).toFixed(2);
+                setSum(result);
+            }
+        } catch (e) {
+            console.error(e)
+        }
     }
 
-    console.log('tableData', tableData);
+    const formValidationSchema = Yup.object().shape({
+        country: Yup.string().required('Required'),
+        amount: Yup.number().min(1, 'Amount must be greater than or equal to 1').required(),
+    });
+
     return (
         <>
             {isLoading && <LoadingContainer>
@@ -96,54 +129,46 @@ function App() {
                     <Img src={LoadingIcon} alt={'logo'}/>
                 </Loading>
             </LoadingContainer>}
-            {isSuccess && <><Title>Hello Czech Bank</Title>
-                <Grid>
-                    <Grid>
+            {isSuccess && <>
+                <HeaderText>{data.info}</HeaderText>
+                <Flex>
+                    <FormWrapper>
+                        <Formik initialValues={{country: 'Australia', amount: 1}}
+                                validationSchema={formValidationSchema}
+                                onSubmit={handleSubmit}>
+                            <Form>
+                                <SelectInput name={'country'} label={'Please select currency'}>
+                                    {data.rates.map(rate => ({
+                                        country: rate.country,
+                                        currency: rate.currency,
+                                        code: rate.code
+                                    })).map((item, index) => (
+                                        <option key={index} value={item.country}>
+                                            {item.country} {item.currency} ({item.code})
+                                        </option>
+                                    ))}
+                                </SelectInput>
+                                <TextInput
+                                    name={'amount'}
+                                    type='text'
+                                    label={'Amount'}
+                                />
+                                <Button type="submit">Calculate</Button>
+                                {sum && (
+                                    <h2>Result: <Sum>{sum}</Sum> CZK</h2>
+                                )}
+                            </Form>
+                        </Formik>
+                    </FormWrapper>
+                    <TableWrapper>
                         <Table
                             rowKey={'title'}
                             columns={columns}
                             data={tableData}
                             tableLayout='auto'
                             components={theme.tableComponents}/>
-                    </Grid>
-                    <Grid>
-
-                        <Formik initialValues={{email: '', password: ''}}
-                                validate={values => {
-                                    const errors = {};
-                                    if (!values) {
-
-                                    } else if (
-                                        !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
-                                    ) {
-
-                                    }
-                                    return errors;
-                                }}
-                                onSubmit={(values, {setSubmitting}) => {
-                                    setTimeout(() => {
-                                        setSubmitting(false);
-                                    }, 400);
-                                }}>
-                            <div>
-                                <SelectInput name={'currency-selector'} value={value} label={'Please select currency'}>
-                                    {data.rates.map(rate => rate.country).map((country, index) => (
-                                        <option key={index} value={country}>
-                                            {country}
-                                        </option>
-                                    ))}
-                                </SelectInput>
-                                <TextInput
-                                    name={'amount-set'}
-                                    type='text'
-                                    value={value}
-                                    label={'Amount'}
-                                />
-                                <Button onClick={handleSubmit}>Calculate</Button>
-                            </div>
-                        </Formik>
-                    </Grid>
-                </Grid>
+                    </TableWrapper>
+                </Flex>
             </>}
         </>
     );

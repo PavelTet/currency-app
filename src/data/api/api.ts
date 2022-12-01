@@ -22,7 +22,7 @@ const CSVToArray = (data: string, delimiter = '|', omitFirstRow = false) =>
         .map(v => v.split(delimiter));
 
 const getInfo = (responseArray: string[][]) => {
-    const date = responseArray[0][0].split('#');
+    const date = responseArray[0][0].split('#')[0];
     const releaseNumber = responseArray[0][0].split('#')[1];
     return `Last update: ${date}, Release number: ${releaseNumber}`
 }

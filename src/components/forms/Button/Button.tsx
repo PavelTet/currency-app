@@ -18,6 +18,7 @@ const Button = styled.button`
   line-height: 50px;
   font-size: 15px;
   padding: 0 25px;
+  margin-top: ${props => props.theme.size.spacing[5]};
 
   &:hover {
     background-color: rgb(223, 38, 60);
