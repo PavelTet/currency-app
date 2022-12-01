@@ -1,13 +1,14 @@
 import {createGlobalStyle} from 'styled-components'
-
 import {color} from './color'
 import * as size from './size'
 import * as text from './text'
+import {tableComponents} from "../components/forms/Table/Table";
 
 export const theme = {
     color,
     size,
     text,
+    tableComponents
 }
 
 export const GlobalStyle = createGlobalStyle`

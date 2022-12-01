@@ -16,6 +16,7 @@ export interface ExchangeRateInfo {
 
 const CSVToArray = (data: string, delimiter = '|', omitFirstRow = false) =>
     data
+        .slice(0, -1)
         .slice(omitFirstRow ? data.indexOf('\n') + 1 : 0)
         .split('\n')
         .map(v => v.split(delimiter));
@@ -53,6 +54,7 @@ const getColumnsNames = (responseArray: string[][]) => {
 const serializeExchangeRate = (response: string): ExchangeRateInfo => {
     console.log('text', CSVToArray(response));
     const responseArray = CSVToArray(response);
+    console.log('a', responseArray);
     return {
         info: getInfo(responseArray),
         rates: getExchangeRates(responseArray),

@@ -7,5 +7,6 @@ export const spacing = {
     4: rem(1),
     5: rem(1.5),
     6: rem(2),
-    7: rem(3),
+    7: rem(2.5),
+    8: rem(3),
 };

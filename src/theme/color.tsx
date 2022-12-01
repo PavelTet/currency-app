@@ -1,4 +1,7 @@
 export const color = {
-    blue: '#0047bb',
-    green: '#17c67e',
+    silver: '#8c8c8c',
+    white: '#ffffff',
+    red: '#c71429ff',
+    softGrey: '#AAAAAA',
+    blue: '#F6F9FB',
 };
